@@ -1,0 +1,10 @@
+services:
+  wishlist:
+    build: .
+    ports:
+      - "3967:3967"
+    volumes:
+      - ./data:/data
+    env_file:
+      - .env
+    restart: unless-stopped

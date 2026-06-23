@@ -1,0 +1,23 @@
+# Local config and data
+.env
+*.db
+*.db-*
+data/
+uploads/
+backend/uploads/
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+
+# Go build output
+backend/wishlist
+wishlist
+
+# Editor and OS noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wishlist favicon">
+  <rect width="64" height="64" rx="16" fill="#fff7ed"/>
+  <path d="M18 29h28v23H18z" fill="#f43f5e"/>
+  <path d="M15 23h34v9H15z" fill="#e11d48"/>
+  <path d="M30 23h4v29h-4z" fill="#fff7ed"/>
+  <path d="M21 20c-3-4-1-9 4-9 4 0 6 5 7 12-6-1-9-1-11-3z" fill="none" stroke="#334155" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M43 20c3-4 1-9-4-9-4 0-6 5-7 12 6-1 9-1 11-3z" fill="none" stroke="#334155" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
