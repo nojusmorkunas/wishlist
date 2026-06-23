@@ -31,7 +31,7 @@ export default function LoginPage({ onLogin }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-background">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-background">
       <Card className="max-w-sm w-full mx-auto">
         <CardHeader className="text-center pb-2">
           <h1 className="text-3xl font-bold tracking-tight">Wishlist</h1>

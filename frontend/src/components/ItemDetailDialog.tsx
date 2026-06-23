@@ -159,17 +159,17 @@ export default function ItemDetailDialog({
                   )}
                   <div className="flex gap-2 flex-wrap">
                     {!item.isPurchased ? (
-                      <Button size="sm" disabled={busy} onClick={() => run("purchase", () => onPurchase?.())} className="gap-1.5">
+                      <Button size="sm" disabled={busy} onClick={() => run("purchase", () => onPurchase?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
                         {busyAction === "purchase" ? <Loader2 size={15} className="animate-spin" /> : <ShoppingBag size={15} />}
                         Mark as bought
                       </Button>
                     ) : (
-                      <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unpurchase", () => onUnpurchase?.())} className="gap-1.5">
+                      <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unpurchase", () => onUnpurchase?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
                         {busyAction === "unpurchase" ? <Loader2 size={15} className="animate-spin" /> : <PackageCheck size={15} />}
                         Unmark bought
                       </Button>
                     )}
-                    <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unclaim", () => onUnclaim?.())} className="gap-1.5">
+                    <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unclaim", () => onUnclaim?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
                       {busyAction === "unclaim" ? <Loader2 size={15} className="animate-spin" /> : <Undo2 size={15} />}
                       Unclaim
                     </Button>
@@ -189,7 +189,7 @@ export default function ItemDetailDialog({
                     disabled={busy}
                   />
                   <div className="flex gap-2">
-                    <Button size="sm" disabled={busy} onClick={handleClaim} className="gap-1.5">
+                    <Button size="sm" disabled={busy} onClick={handleClaim} className="min-h-[44px] gap-1.5 sm:min-h-0">
                       {busyAction === "claim" ? <Loader2 size={15} className="animate-spin" /> : <Gift size={15} />}
                       Confirm claim
                     </Button>
@@ -198,13 +198,14 @@ export default function ItemDetailDialog({
                       variant="outline"
                       disabled={busy}
                       onClick={() => { setShowClaimForm(false); setClaimNote("") }}
+                      className="min-h-[44px] sm:min-h-0"
                     >
                       Cancel
                     </Button>
                   </div>
                 </div>
               ) : (
-                <Button size="sm" disabled={busy} onClick={() => setShowClaimForm(true)} className="gap-1.5">
+                <Button size="sm" disabled={busy} onClick={() => setShowClaimForm(true)} className="min-h-[44px] gap-1.5 sm:min-h-0">
                   <Gift size={15} />
                   Claim this gift
                 </Button>
@@ -215,23 +216,23 @@ export default function ItemDetailDialog({
           {mode === "owner" && (
             <div className="border-t pt-4 flex gap-2 flex-wrap">
               {!item.isReceived ? (
-                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("received", () => onReceived?.())} className="gap-1.5">
+                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("received", () => onReceived?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
                   {busyAction === "received" ? <Loader2 size={15} className="animate-spin" /> : <PackageCheck size={15} />}
                   Mark as received
                 </Button>
               ) : (
-                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unreceived", () => onUnreceived?.())} className="gap-1.5">
+                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unreceived", () => onUnreceived?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
                   {busyAction === "unreceived" ? <Loader2 size={15} className="animate-spin" /> : <Undo2 size={15} />}
                   Unmark received
                 </Button>
               )}
               {!item.isArchived ? (
-                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("archive", () => onArchive?.())} className="gap-1.5">
+                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("archive", () => onArchive?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
                   {busyAction === "archive" ? <Loader2 size={15} className="animate-spin" /> : <Archive size={15} />}
                   Archive
                 </Button>
               ) : (
-                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unarchive", () => onUnarchive?.())} className="gap-1.5">
+                <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unarchive", () => onUnarchive?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
                   {busyAction === "unarchive" ? <Loader2 size={15} className="animate-spin" /> : <ArchiveRestore size={15} />}
                   Unarchive
                 </Button>

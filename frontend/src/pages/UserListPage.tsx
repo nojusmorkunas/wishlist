@@ -103,15 +103,15 @@ export default function UserListPage() {
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="mb-6 flex items-center gap-3">
         <UserAvatar user={targetUser} className="w-12 h-12" />
-        <div>
-        <h1 className="text-2xl font-bold">{targetUser.displayName}'s list</h1>
-        {days !== null && (
-          <p className="text-muted-foreground text-sm mt-0.5">
-            {days === 0
-              ? "🎂 Today is their birthday!"
-              : `Birthday in ${days} day${days === 1 ? "" : "s"}`}
-          </p>
-        )}
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold truncate">{targetUser.displayName}'s list</h1>
+          {days !== null && (
+            <p className="text-muted-foreground text-sm mt-0.5">
+              {days === 0
+                ? "🎂 Today is their birthday!"
+                : `Birthday in ${days} day${days === 1 ? "" : "s"}`}
+            </p>
+          )}
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export default function UserListPage() {
         <div className="space-y-2">
           {items.map((item) => (
             <Card key={item.id} className={item.isReceived ? "opacity-60" : undefined}>
-              <CardContent className="p-3 flex items-center gap-2">
+              <CardContent className="p-3 flex flex-wrap items-start gap-2 sm:flex-nowrap sm:items-center">
                 {item.imageUrl && (
                   <img
                     src={item.imageUrl}
@@ -132,7 +132,7 @@ export default function UserListPage() {
                   />
                 )}
 
-                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openDetail(item)}>
+                <div className="flex-1 min-w-0 cursor-pointer pt-1 sm:pt-0" onClick={() => openDetail(item)}>
                   <p className="font-semibold text-sm leading-tight line-clamp-1">
                     {item.name}
                   </p>
@@ -166,9 +166,9 @@ export default function UserListPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-0.5 shrink-0">
+                <div className="order-last flex w-full items-center justify-end gap-1 shrink-0 sm:order-none sm:w-auto">
                   {item.url && (
-                    <Button variant="ghost" size="icon" asChild className="h-9 w-9">
+                    <Button variant="ghost" size="icon" asChild className="h-11 w-11 sm:h-9 sm:w-9">
                       <a href={item.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink size={15} />
                         <span className="sr-only">Open link</span>
@@ -180,7 +180,7 @@ export default function UserListPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => openDetail(item)}
-                      className="h-9 gap-1.5 text-xs"
+                      className="h-11 gap-1.5 text-xs sm:h-9"
                     >
                       <Gift size={14} />
                       Claim
@@ -193,7 +193,7 @@ export default function UserListPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handlePurchase(item.id)}
-                          className="h-9 gap-1.5 text-xs"
+                          className="h-11 gap-1.5 text-xs sm:h-9"
                           title="Mark as bought"
                         >
                           <ShoppingBag size={14} />
@@ -204,7 +204,7 @@ export default function UserListPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleUnpurchase(item.id)}
-                          className="h-9 gap-1.5 text-xs"
+                          className="h-11 gap-1.5 text-xs sm:h-9"
                           title="Unmark bought"
                         >
                           <PackageCheck size={14} />
@@ -212,7 +212,7 @@ export default function UserListPage() {
                       )}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-9 w-9">
+                          <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
                             <Undo2 size={14} />
                             <span className="sr-only">Unclaim</span>
                           </Button>

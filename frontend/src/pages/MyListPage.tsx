@@ -81,11 +81,11 @@ function SortableItemCard({
       className={isDragging ? "opacity-50 z-50 relative" : ""}
     >
       <Card>
-        <CardContent className="p-3 flex items-center gap-2">
+        <CardContent className="p-3 flex flex-wrap items-start gap-2 sm:flex-nowrap sm:items-center">
           <button
             {...attributes}
             {...listeners}
-            className="cursor-grab text-muted-foreground hover:text-foreground shrink-0 p-1 touch-none"
+            className="cursor-grab text-muted-foreground hover:text-foreground shrink-0 p-1 touch-none min-h-[44px] min-w-[28px] flex items-center justify-center"
             tabIndex={-1}
           >
             <GripVertical size={16} />
@@ -101,7 +101,7 @@ function SortableItemCard({
             />
           )}
 
-          <div className="flex-1 min-w-0 cursor-pointer" onClick={onOpen}>
+          <div className="flex-1 min-w-0 cursor-pointer pt-1 sm:pt-0" onClick={onOpen}>
             <p className="font-semibold text-sm leading-tight line-clamp-1">
               {item.name}
             </p>
@@ -124,26 +124,26 @@ function SortableItemCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-0.5 shrink-0">
+          <div className="order-last flex w-full items-center justify-end gap-1 shrink-0 sm:order-none sm:w-auto">
             {item.url && (
-              <Button variant="ghost" size="icon" asChild className="h-9 w-9">
+              <Button variant="ghost" size="icon" asChild className="h-11 w-11 sm:h-9 sm:w-9">
                 <a href={item.url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink size={15} />
                   <span className="sr-only">Open link</span>
                 </a>
               </Button>
             )}
-            <Button variant="ghost" size="icon" onClick={onEdit} className="h-9 w-9">
+            <Button variant="ghost" size="icon" onClick={onEdit} className="h-11 w-11 sm:h-9 sm:w-9">
               <Pencil size={15} />
               <span className="sr-only">Edit</span>
             </Button>
-            <Button variant="ghost" size="icon" onClick={onArchive} className="h-9 w-9 text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="icon" onClick={onArchive} className="h-11 w-11 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground">
               <Archive size={15} />
               <span className="sr-only">Archive</span>
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive">
+                <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9 text-destructive hover:text-destructive">
                   <Trash2 size={15} />
                   <span className="sr-only">Delete</span>
                 </Button>
@@ -272,16 +272,16 @@ export default function MyListPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="mb-4 flex items-start justify-between gap-2">
-        <div>
-          <h1 className="text-2xl font-bold">{user.displayName}</h1>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold truncate">{user.displayName}</h1>
           {days !== null && (
             <p className="text-muted-foreground text-sm mt-0.5">
               {days === 0 ? "🎂 Today is your birthday!" : `Birthday in ${days} day${days === 1 ? "" : "s"}`}
             </p>
           )}
         </div>
-        <Button variant="outline" size="sm" onClick={copyLink} className="shrink-0 gap-1.5 min-h-[36px]">
+        <Button variant="outline" size="sm" onClick={copyLink} className="shrink-0 gap-1.5 min-h-[44px] sm:min-h-[36px]">
           {copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
           {copied ? "Copied!" : "Copy link"}
         </Button>
@@ -342,13 +342,13 @@ export default function MyListPage() {
                           />
                         )}
                         <p className="flex-1 text-sm font-medium line-clamp-1 min-w-0">{item.name}</p>
-                        <Button variant="ghost" size="icon" onClick={() => handleUnarchive(item.id)} className="h-9 w-9 shrink-0">
+                        <Button variant="ghost" size="icon" onClick={() => handleUnarchive(item.id)} className="h-11 w-11 sm:h-9 sm:w-9 shrink-0">
                           <ArchiveRestore size={15} />
                           <span className="sr-only">Unarchive</span>
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-destructive hover:text-destructive">
+                            <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9 shrink-0 text-destructive hover:text-destructive">
                               <Trash2 size={15} />
                             </Button>
                           </AlertDialogTrigger>

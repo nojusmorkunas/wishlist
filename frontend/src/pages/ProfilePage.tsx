@@ -180,9 +180,9 @@ export default function ProfilePage() {
             onChange={handleAvatarChange}
           />
         </div>
-        <div className="space-y-1">
-          <p className="font-semibold">{user.displayName}</p>
-          <div className="flex gap-2">
+        <div className="min-w-0 space-y-1">
+          <p className="font-semibold truncate">{user.displayName}</p>
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={() => avatarInputRef.current?.click()} disabled={avatarUploading}>
               Change photo
             </Button>
@@ -250,7 +250,7 @@ export default function ProfilePage() {
             <p className="text-sm text-muted-foreground">
               Override the app-wide defaults (currently {appSettings.currency} / {appSettings.locale}). Leave empty to use the app default.
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="pref-currency">Currency</Label>
                 <Input

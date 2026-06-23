@@ -44,8 +44,8 @@ function AppShell() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b bg-background sticky top-0 z-40">
-        <div className="flex items-center justify-between h-14 px-4 max-w-5xl mx-auto w-full">
-          <span className="font-bold text-lg tracking-tight">Wishlist</span>
+        <div className="flex items-center justify-between h-14 px-4 max-w-5xl mx-auto w-full gap-3">
+          <span className="font-bold text-lg tracking-tight truncate">Wishlist</span>
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <NavLink
@@ -76,7 +76,9 @@ function AppShell() {
         </div>
       </header>
 
-      <main className="flex-1 pb-20 md:pb-6">
+      <main
+        className="flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-6"
+      >
         <Routes>
           <Route path="/" element={<Navigate to="/browse" replace />} />
           <Route path="/browse" element={<BrowsePage />} />

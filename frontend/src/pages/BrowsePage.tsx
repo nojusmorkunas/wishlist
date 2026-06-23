@@ -60,7 +60,7 @@ export default function BrowsePage() {
                 <CardContent className="pt-6 flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <UserAvatar user={u} className="w-10 h-10" />
-                    <p className="text-lg font-semibold leading-tight">{u.displayName}</p>
+                    <p className="min-w-0 truncate text-lg font-semibold leading-tight">{u.displayName}</p>
                   </div>
                   {days !== null && (
                     <p className="text-sm text-muted-foreground mt-1">

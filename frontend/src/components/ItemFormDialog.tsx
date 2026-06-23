@@ -202,7 +202,7 @@ export default function ItemFormDialog({ open, onOpenChange, initial, onSave }: 
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="item-price">Price</Label>
               <div className="flex">
@@ -288,7 +288,7 @@ export default function ItemFormDialog({ open, onOpenChange, initial, onSave }: 
           </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>

@@ -67,8 +67,8 @@ export default function PublicListPage() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-6 flex items-center gap-3">
           <UserAvatar user={listUser} className="w-12 h-12" />
-          <div>
-            <h1 className="text-2xl font-bold">{listUser.displayName}'s wishlist</h1>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold truncate">{listUser.displayName}'s wishlist</h1>
             {days !== null && (
               <p className="text-muted-foreground text-sm mt-0.5">
                 {days === 0
@@ -85,7 +85,7 @@ export default function PublicListPage() {
           <div className="space-y-2">
             {items.map((item) => (
               <Card key={item.id}>
-                <CardContent className="p-3 flex items-center gap-2">
+                <CardContent className="p-3 flex items-start gap-2 sm:items-center">
                   {item.imageUrl && (
                     <img
                       src={item.imageUrl}
@@ -120,7 +120,7 @@ export default function PublicListPage() {
                   </div>
 
                   {item.url && (
-                    <Button variant="ghost" size="icon" asChild className="h-9 w-9 shrink-0">
+                    <Button variant="ghost" size="icon" asChild className="h-11 w-11 shrink-0 sm:h-9 sm:w-9">
                       <a href={item.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink size={15} />
                         <span className="sr-only">Open link</span>

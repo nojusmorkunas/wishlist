@@ -73,7 +73,7 @@ function AppSettingsCard() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSave} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="as-currency">Default currency</Label>
               <Input
@@ -293,7 +293,7 @@ function SignupLinkDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
               </Button>
             </>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex min-w-0 gap-2">
               <Input value={link} readOnly className="text-xs" />
               <Button variant="outline" size="icon" onClick={copy} className="shrink-0 min-h-[44px] min-w-[44px]">
                 {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
@@ -360,7 +360,7 @@ export default function AdminPage() {
                   <UserAvatar user={u} className="w-9 h-9 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold">{u.displayName}</span>
+                      <span className="min-w-0 max-w-full truncate font-semibold">{u.displayName}</span>
                       {u.isAdmin && <Badge variant="secondary">Admin</Badge>}
                     </div>
                     <p className="text-sm text-muted-foreground">@{u.username}</p>
