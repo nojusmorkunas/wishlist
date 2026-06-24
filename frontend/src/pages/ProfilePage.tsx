@@ -154,7 +154,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 animate-in fade-in duration-200">
       <h1 className="text-2xl font-bold">Profile</h1>
 
       <div className="flex items-center gap-4">

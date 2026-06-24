@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { api, type User, type ItemView } from "@/lib/api"
-import { daysUntilBirthday, formatPrice } from "@/lib/utils"
+import { daysUntilBirthday, turningAge, formatPrice } from "@/lib/utils"
 import { useSettings } from "@/contexts/SettingsContext"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -38,6 +38,7 @@ export default function UserListPage() {
   const [loading, setLoading] = useState(true)
   const [detailItem, setDetailItem] = useState<ItemView | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
+  const [flashId, setFlashId] = useState<{ id: number; type: "claim" | "unclaim" } | null>(null)
 
   const userId = parseInt(id ?? "0", 10)
 
@@ -62,16 +63,23 @@ export default function UserListPage() {
     setDetailItem((prev) => (prev?.id === id ? { ...prev, ...patch } : prev))
   }
 
-  async function handleClaim(itemId: number, note: string) {
-    updateItem(itemId, { claimed: true, claimedByMe: true, claimNote: note })
-    setDetailOpen(false)
-    api.items.claim(itemId, note)
+  async function handleClaim(itemId: number) {
+    updateItem(itemId, { claimed: true, claimedByMe: true, claimNote: "" })
+    api.items.claim(itemId)
+    setFlashId({ id: itemId, type: "claim" })
+    setTimeout(() => setFlashId(null), 1300)
+  }
+
+  async function handleUpdateNote(itemId: number, note: string) {
+    updateItem(itemId, { claimNote: note })
+    await api.items.updateClaimNote(itemId, note)
   }
 
   async function handleUnclaim(itemId: number) {
     updateItem(itemId, { claimed: false, claimedByMe: false, isPurchased: false, claimNote: "" })
-    setDetailOpen(false)
     api.items.unclaim(itemId)
+    setFlashId({ id: itemId, type: "unclaim" })
+    setTimeout(() => setFlashId(null), 1300)
   }
 
   async function handlePurchase(itemId: number) {
@@ -98,9 +106,10 @@ export default function UserListPage() {
   if (!targetUser) return null
 
   const days = daysUntilBirthday(targetUser.birthday)
+  const age = turningAge(targetUser.birthday)
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="max-w-2xl mx-auto px-4 py-6 animate-in fade-in duration-200">
       <div className="mb-6 flex items-center gap-3">
         <UserAvatar user={targetUser} className="w-12 h-12" />
         <div className="min-w-0">
@@ -108,8 +117,8 @@ export default function UserListPage() {
           {days !== null && (
             <p className="text-muted-foreground text-sm mt-0.5">
               {days === 0
-                ? "🎂 Today is their birthday!"
-                : `Birthday in ${days} day${days === 1 ? "" : "s"}`}
+                ? `🎂 Turning ${age} today!`
+                : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
             </p>
           )}
         </div>
@@ -118,10 +127,10 @@ export default function UserListPage() {
       {items.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">No items on this list yet.</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {items.map((item) => (
-            <Card key={item.id} className={item.isReceived ? "opacity-60" : undefined}>
-              <CardContent className="p-3 flex flex-wrap items-start gap-2 sm:flex-nowrap sm:items-center">
+            <Card key={item.id} className={`hover:shadow-md ${item.isReceived ? "opacity-60" : ""} ${flashId?.id === item.id ? (flashId.type === "claim" ? "claim-flash" : "unclaim-flash") : ""}`}>
+              <CardContent className="p-3 flex items-center gap-2">
                 {item.imageUrl && (
                   <img
                     src={item.imageUrl}
@@ -132,7 +141,7 @@ export default function UserListPage() {
                   />
                 )}
 
-                <div className="flex-1 min-w-0 cursor-pointer pt-1 sm:pt-0" onClick={() => openDetail(item)}>
+                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openDetail(item)}>
                   <p className="font-semibold text-sm leading-tight line-clamp-1">
                     {item.name}
                   </p>
@@ -166,9 +175,9 @@ export default function UserListPage() {
                   </div>
                 </div>
 
-                <div className="order-last flex w-full items-center justify-end gap-1 shrink-0 sm:order-none sm:w-auto">
+                <div className="flex items-center gap-1 shrink-0">
                   {item.url && (
-                    <Button variant="ghost" size="icon" asChild className="h-11 w-11 sm:h-9 sm:w-9">
+                    <Button variant="ghost" size="icon" asChild className="h-9 w-9">
                       <a href={item.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink size={15} />
                         <span className="sr-only">Open link</span>
@@ -180,7 +189,7 @@ export default function UserListPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => openDetail(item)}
-                      className="h-11 gap-1.5 text-xs sm:h-9"
+                      className="h-9 gap-1.5 text-xs"
                     >
                       <Gift size={14} />
                       Claim
@@ -193,7 +202,7 @@ export default function UserListPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handlePurchase(item.id)}
-                          className="h-11 gap-1.5 text-xs sm:h-9"
+                          className="h-9 gap-1.5 text-xs"
                           title="Mark as bought"
                         >
                           <ShoppingBag size={14} />
@@ -204,7 +213,7 @@ export default function UserListPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleUnpurchase(item.id)}
-                          className="h-11 gap-1.5 text-xs sm:h-9"
+                          className="h-9 gap-1.5 text-xs"
                           title="Unmark bought"
                         >
                           <PackageCheck size={14} />
@@ -212,7 +221,7 @@ export default function UserListPage() {
                       )}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9">
+                          <Button variant="ghost" size="icon" className="h-9 w-9">
                             <Undo2 size={14} />
                             <span className="sr-only">Unclaim</span>
                           </Button>
@@ -246,11 +255,13 @@ export default function UserListPage() {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         mode="viewer"
-        onClaim={(note) => detailItem && handleClaim(detailItem.id, note)}
+        onClaim={() => detailItem && handleClaim(detailItem.id)}
         onUnclaim={() => detailItem && handleUnclaim(detailItem.id)}
+        onUpdateNote={(note) => detailItem ? handleUpdateNote(detailItem.id, note) : Promise.resolve()}
         onPurchase={() => detailItem && handlePurchase(detailItem.id)}
         onUnpurchase={() => detailItem && handleUnpurchase(detailItem.id)}
       />
+
     </div>
   )
 }

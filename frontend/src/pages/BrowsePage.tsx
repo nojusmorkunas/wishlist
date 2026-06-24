@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { api, type User, type ItemView } from "@/lib/api"
 import { useAuth } from "@/App"
-import { daysUntilBirthday } from "@/lib/utils"
+import { daysUntilBirthday, turningAge } from "@/lib/utils"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -45,18 +45,19 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-5xl mx-auto px-4 py-6 animate-in fade-in duration-200">
       <h1 className="text-2xl font-bold mb-6">Browse</h1>
       {entries.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">No other users yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {entries.map(({ user: u, items }) => {
             const days = daysUntilBirthday(u.birthday)
+            const age = turningAge(u.birthday)
             const unclaimed = items.filter((i) => !i.claimed && !i.isReceived).length
             const total = items.length
             return (
-              <Card key={u.id} className="flex flex-col">
+              <Card key={u.id} className="flex flex-col transition-shadow hover:shadow-md">
                 <CardContent className="pt-6 flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <UserAvatar user={u} className="w-10 h-10" />
@@ -65,8 +66,8 @@ export default function BrowsePage() {
                   {days !== null && (
                     <p className="text-sm text-muted-foreground mt-1">
                       {days === 0
-                        ? "🎂 Today!"
-                        : `Birthday in ${days} day${days === 1 ? "" : "s"}`}
+                        ? `🎂 Turning ${age} today!`
+                        : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
                     </p>
                   )}
                   <div className="mt-3 flex gap-2 flex-wrap">

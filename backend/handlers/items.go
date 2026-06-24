@@ -123,6 +123,14 @@ func CreateItem(db *sql.DB) http.HandlerFunc {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "name is required"})
 			return
 		}
+		if len([]rune(body.Name)) > 100 {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "name too long"})
+			return
+		}
+		if len([]rune(body.Description)) > 500 {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "description too long"})
+			return
+		}
 		item, err := appdb.CreateItem(db, user.ID, body.Name, body.Description, body.URL, body.Price, body.Currency, body.ImageURL, body.Priority)
 		if err != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
@@ -165,6 +173,14 @@ func UpdateItem(db *sql.DB) http.HandlerFunc {
 		}
 		if strings.TrimSpace(body.Name) == "" {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "name is required"})
+			return
+		}
+		if len([]rune(body.Name)) > 100 {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "name too long"})
+			return
+		}
+		if len([]rune(body.Description)) > 500 {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "description too long"})
 			return
 		}
 		item, err := appdb.UpdateItem(db, id, body.Name, body.Description, body.URL, body.Price, body.Currency, body.ImageURL, body.Priority)
@@ -230,6 +246,36 @@ func ClaimItem(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		if err := appdb.ClaimItem(db, id, user.ID, body.Note); err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func UpdateClaimNote(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := UserFromContext(r.Context())
+		id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id"})
+			return
+		}
+		var body struct {
+			Note string `json:"note"`
+		}
+		json.NewDecoder(r.Body).Decode(&body)
+
+		meta, err := getItemMeta(db, id)
+		if err != nil {
+			writeJSON(w, http.StatusNotFound, map[string]string{"error": "not found"})
+			return
+		}
+		if meta.claimedBy == nil || *meta.claimedBy != user.ID {
+			writeJSON(w, http.StatusForbidden, map[string]string{"error": "forbidden"})
+			return
+		}
+		if err := appdb.UpdateClaimNote(db, id, user.ID, body.Note); err != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
 			return
 		}

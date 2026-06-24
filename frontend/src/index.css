@@ -57,3 +57,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .claim-flash {
+    animation: claim-flash 1.2s ease-out forwards;
+  }
+  .unclaim-flash {
+    animation: unclaim-flash 1.2s ease-out forwards;
+  }
+  @keyframes claim-flash {
+    0%, 60% { box-shadow: 0 0 0 2px rgb(74 222 128 / 0.7); }
+    100%     { box-shadow: 0 0 0 2px rgb(74 222 128 / 0); }
+  }
+  @keyframes unclaim-flash {
+    0%, 60% { box-shadow: 0 0 0 2px hsl(var(--border) / 0.8); }
+    100%     { box-shadow: 0 0 0 2px hsl(var(--border) / 0); }
+  }
+}

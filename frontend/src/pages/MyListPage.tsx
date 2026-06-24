@@ -16,7 +16,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { api, type ItemView } from "@/lib/api"
 import { useAuth } from "@/App"
-import { daysUntilBirthday, formatPrice } from "@/lib/utils"
+import { daysUntilBirthday, turningAge, formatPrice } from "@/lib/utils"
 import { useSettings } from "@/contexts/SettingsContext"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -80,8 +80,8 @@ function SortableItemCard({
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={isDragging ? "opacity-50 z-50 relative" : ""}
     >
-      <Card>
-        <CardContent className="p-3 flex flex-wrap items-start gap-2 sm:flex-nowrap sm:items-center">
+      <Card className="transition-shadow hover:shadow-md">
+        <CardContent className="p-3 flex items-center gap-2">
           <button
             {...attributes}
             {...listeners}
@@ -101,7 +101,7 @@ function SortableItemCard({
             />
           )}
 
-          <div className="flex-1 min-w-0 cursor-pointer pt-1 sm:pt-0" onClick={onOpen}>
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={onOpen}>
             <p className="font-semibold text-sm leading-tight line-clamp-1">
               {item.name}
             </p>
@@ -124,26 +124,26 @@ function SortableItemCard({
             </div>
           </div>
 
-          <div className="order-last flex w-full items-center justify-end gap-1 shrink-0 sm:order-none sm:w-auto">
+          <div className="flex items-center gap-1 shrink-0">
             {item.url && (
-              <Button variant="ghost" size="icon" asChild className="h-11 w-11 sm:h-9 sm:w-9">
+              <Button variant="ghost" size="icon" asChild className="h-9 w-9">
                 <a href={item.url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink size={15} />
                   <span className="sr-only">Open link</span>
                 </a>
               </Button>
             )}
-            <Button variant="ghost" size="icon" onClick={onEdit} className="h-11 w-11 sm:h-9 sm:w-9">
+            <Button variant="ghost" size="icon" onClick={onEdit} className="h-9 w-9">
               <Pencil size={15} />
               <span className="sr-only">Edit</span>
             </Button>
-            <Button variant="ghost" size="icon" onClick={onArchive} className="h-11 w-11 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="icon" onClick={onArchive} className="h-9 w-9 text-muted-foreground hover:text-foreground">
               <Archive size={15} />
               <span className="sr-only">Archive</span>
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9 text-destructive hover:text-destructive">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive hover:text-destructive">
                   <Trash2 size={15} />
                   <span className="sr-only">Delete</span>
                 </Button>
@@ -185,6 +185,7 @@ export default function MyListPage() {
   const [copied, setCopied] = useState(false)
 
   const days = daysUntilBirthday(user.birthday)
+  const age = turningAge(user.birthday)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
@@ -271,19 +272,27 @@ export default function MyListPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="max-w-2xl mx-auto px-4 py-6 animate-in fade-in duration-200">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-2xl font-bold truncate">{user.displayName}</h1>
           {days !== null && (
             <p className="text-muted-foreground text-sm mt-0.5">
-              {days === 0 ? "🎂 Today is your birthday!" : `Birthday in ${days} day${days === 1 ? "" : "s"}`}
+              {days === 0
+                ? `🎂 Turning ${age} today!`
+                : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
             </p>
           )}
         </div>
-        <Button variant="outline" size="sm" onClick={copyLink} className="shrink-0 gap-1.5 min-h-[44px] sm:min-h-[36px]">
-          {copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
-          {copied ? "Copied!" : "Copy link"}
+        <Button variant="outline" size="sm" onClick={copyLink} className="shrink-0 relative overflow-hidden min-h-[44px] sm:min-h-[36px]">
+          <span className={`flex items-center gap-1.5 transition-all duration-200 ${copied ? "opacity-0 -translate-y-2" : "opacity-100 translate-y-0"}`}>
+            <Copy size={14} />
+            Share wishlist
+          </span>
+          <span className={`absolute inset-0 flex items-center justify-center gap-1.5 transition-all duration-200 ${copied ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
+            <Check size={14} className="text-green-600" />
+            Copied!
+          </span>
         </Button>
       </div>
 
@@ -304,7 +313,7 @@ export default function MyListPage() {
         <>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={activeItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-2">
+              <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {activeItems.map((item) => (
                   <SortableItemCard
                     key={item.id}
@@ -342,13 +351,13 @@ export default function MyListPage() {
                           />
                         )}
                         <p className="flex-1 text-sm font-medium line-clamp-1 min-w-0">{item.name}</p>
-                        <Button variant="ghost" size="icon" onClick={() => handleUnarchive(item.id)} className="h-11 w-11 sm:h-9 sm:w-9 shrink-0">
+                        <Button variant="ghost" size="icon" onClick={() => handleUnarchive(item.id)} className="h-9 w-9 shrink-0">
                           <ArchiveRestore size={15} />
                           <span className="sr-only">Unarchive</span>
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-11 w-11 sm:h-9 sm:w-9 shrink-0 text-destructive hover:text-destructive">
+                            <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-destructive hover:text-destructive">
                               <Trash2 size={15} />
                             </Button>
                           </AlertDialogTrigger>

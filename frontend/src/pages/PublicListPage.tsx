@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { api, type PublicUser, type PublicItemView } from "@/lib/api"
-import { daysUntilBirthday, formatPrice } from "@/lib/utils"
+import { daysUntilBirthday, turningAge, formatPrice } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -55,6 +55,7 @@ export default function PublicListPage() {
   }
 
   const days = daysUntilBirthday(listUser.birthday)
+  const age = turningAge(listUser.birthday)
 
   return (
     <div className="min-h-screen bg-background">
@@ -64,7 +65,7 @@ export default function PublicListPage() {
         </div>
       </header>
 
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="max-w-2xl mx-auto px-4 py-6 animate-in fade-in duration-200">
         <div className="mb-6 flex items-center gap-3">
           <UserAvatar user={listUser} className="w-12 h-12" />
           <div className="min-w-0">
@@ -72,8 +73,8 @@ export default function PublicListPage() {
             {days !== null && (
               <p className="text-muted-foreground text-sm mt-0.5">
                 {days === 0
-                  ? "🎂 Today is their birthday!"
-                  : `Birthday in ${days} day${days === 1 ? "" : "s"}`}
+                  ? `🎂 Turning ${age} today!`
+                  : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
               </p>
             )}
           </div>
@@ -82,9 +83,9 @@ export default function PublicListPage() {
         {items.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">No items on this list yet.</p>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
             {items.map((item) => (
-              <Card key={item.id}>
+              <Card key={item.id} className="transition-shadow hover:shadow-md">
                 <CardContent className="p-3 flex items-start gap-2 sm:items-center">
                   {item.imageUrl && (
                     <img

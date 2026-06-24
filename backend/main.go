@@ -75,6 +75,7 @@ func main() {
 			r.Put("/items/{id}", handlers.UpdateItem(db))
 			r.Delete("/items/{id}", handlers.DeleteItem(db))
 			r.Post("/items/{id}/claim", handlers.ClaimItem(db))
+			r.Put("/items/{id}/claim", handlers.UpdateClaimNote(db))
 			r.Delete("/items/{id}/claim", handlers.UnclaimItem(db))
 			r.Post("/items/{id}/purchase", handlers.PurchaseItem(db))
 			r.Delete("/items/{id}/purchase", handlers.UnpurchaseItem(db))

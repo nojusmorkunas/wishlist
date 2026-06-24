@@ -29,3 +29,12 @@ export function daysUntilBirthday(birthday: string): number | null {
   if (next < today) next.setFullYear(today.getFullYear() + 1)
   return Math.ceil((next.getTime() - today.getTime()) / 86400000)
 }
+
+export function turningAge(birthday: string): number | null {
+  if (!birthday) return null
+  const today = new Date()
+  const bday = new Date(birthday)
+  const thisYearBirthday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate())
+  const nextYear = thisYearBirthday < today ? today.getFullYear() + 1 : today.getFullYear()
+  return nextYear - bday.getFullYear()
+}

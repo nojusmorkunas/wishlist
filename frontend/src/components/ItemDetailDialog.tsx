@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -36,8 +36,9 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   mode: "owner" | "viewer"
-  onClaim?: (note: string) => void
+  onClaim?: () => void
   onUnclaim?: () => void
+  onUpdateNote?: (note: string) => Promise<void>
   onPurchase?: () => void
   onUnpurchase?: () => void
   onReceived?: () => void
@@ -53,6 +54,7 @@ export default function ItemDetailDialog({
   mode,
   onClaim,
   onUnclaim,
+  onUpdateNote,
   onPurchase,
   onUnpurchase,
   onReceived,
@@ -61,10 +63,15 @@ export default function ItemDetailDialog({
   onUnarchive,
 }: Props) {
   const { currency, locale } = useSettings()
-  const [showClaimForm, setShowClaimForm] = useState(false)
-  const [claimNote, setClaimNote] = useState("")
+  const [noteValue, setNoteValue] = useState(item?.claimNote ?? "")
+  const [noteSaved, setNoteSaved] = useState(false)
   const [busyAction, setBusyAction] = useState<string | null>(null)
   const busy = busyAction !== null
+
+  useEffect(() => {
+    setNoteValue(item?.claimNote ?? "")
+    setNoteSaved(false)
+  }, [item?.id, item?.claimNote])
 
   if (!item) return null
 
@@ -74,16 +81,8 @@ export default function ItemDetailDialog({
     try { await fn() } finally { setBusyAction(null) }
   }
 
-  function handleClaim() {
-    run("claim", () => {
-      onClaim?.(claimNote)
-      setClaimNote("")
-      setShowClaimForm(false)
-    })
-  }
-
   return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) setShowClaimForm(false) }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="pr-8">{item.name}</DialogTitle>
@@ -146,69 +145,61 @@ export default function ItemDetailDialog({
                   This gift has been received.
                 </p>
               ) : item.claimedByMe ? (
-                <>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                      {item.isPurchased ? "You bought this" : "You're getting this"}
-                    </Badge>
+                <div className="animate-in fade-in slide-in-from-bottom-1 duration-300 space-y-3">
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                    {item.isPurchased ? "You bought this" : "You're getting this"}
+                  </Badge>
+                  <div className="space-y-1.5">
+                    <Textarea
+                      placeholder="Add a private note (only you can see this)…"
+                      value={noteValue}
+                      onChange={(e) => { setNoteValue(e.target.value); setNoteSaved(false) }}
+                      rows={2}
+                      disabled={busy}
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={busy || noteSaved}
+                      onClick={() => run("note", async () => {
+                        await onUpdateNote?.(noteValue)
+                        setNoteSaved(true)
+                      })}
+                      className="gap-1.5"
+                    >
+                      {busyAction === "note" ? <Loader2 size={14} className="animate-spin" /> : noteSaved ? <Check size={14} /> : null}
+                      {noteSaved ? "Saved" : "Save note"}
+                    </Button>
                   </div>
-                  {item.claimNote && (
-                    <p className="text-sm text-muted-foreground italic">
-                      Your note: {item.claimNote}
-                    </p>
-                  )}
                   <div className="flex gap-2 flex-wrap">
                     {!item.isPurchased ? (
-                      <Button size="sm" disabled={busy} onClick={() => run("purchase", () => onPurchase?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
+                      <Button size="sm" disabled={busy} onClick={() => run("purchase", () => onPurchase?.())} className="gap-1.5">
                         {busyAction === "purchase" ? <Loader2 size={15} className="animate-spin" /> : <ShoppingBag size={15} />}
                         Mark as bought
                       </Button>
                     ) : (
-                      <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unpurchase", () => onUnpurchase?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
+                      <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unpurchase", () => onUnpurchase?.())} className="gap-1.5">
                         {busyAction === "unpurchase" ? <Loader2 size={15} className="animate-spin" /> : <PackageCheck size={15} />}
                         Unmark bought
                       </Button>
                     )}
-                    <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unclaim", () => onUnclaim?.())} className="min-h-[44px] gap-1.5 sm:min-h-0">
+                    <Button size="sm" variant="outline" disabled={busy} onClick={() => run("unclaim", () => onUnclaim?.())} className="gap-1.5">
                       {busyAction === "unclaim" ? <Loader2 size={15} className="animate-spin" /> : <Undo2 size={15} />}
                       Unclaim
                     </Button>
                   </div>
-                </>
+                </div>
               ) : item.claimed ? (
                 <Badge variant="secondary">
                   {item.claimedByName ? `${item.claimedByName} is getting this` : "Someone else is getting this"}
                 </Badge>
-              ) : showClaimForm ? (
-                <div className="space-y-2">
-                  <Textarea
-                    placeholder="Optional private note (only you can see this)…"
-                    value={claimNote}
-                    onChange={(e) => setClaimNote(e.target.value)}
-                    rows={2}
-                    disabled={busy}
-                  />
-                  <div className="flex gap-2">
-                    <Button size="sm" disabled={busy} onClick={handleClaim} className="min-h-[44px] gap-1.5 sm:min-h-0">
-                      {busyAction === "claim" ? <Loader2 size={15} className="animate-spin" /> : <Gift size={15} />}
-                      Confirm claim
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={busy}
-                      onClick={() => { setShowClaimForm(false); setClaimNote("") }}
-                      className="min-h-[44px] sm:min-h-0"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
               ) : (
-                <Button size="sm" disabled={busy} onClick={() => setShowClaimForm(true)} className="min-h-[44px] gap-1.5 sm:min-h-0">
-                  <Gift size={15} />
-                  Claim this gift
-                </Button>
+                <div className="animate-in fade-in slide-in-from-bottom-1 duration-300">
+                  <Button size="sm" disabled={busy} onClick={() => run("claim", () => onClaim?.())} className="gap-1.5">
+                    {busyAction === "claim" ? <Loader2 size={15} className="animate-spin" /> : <Gift size={15} />}
+                    Claim this gift
+                  </Button>
+                </div>
               )}
             </div>
           )}

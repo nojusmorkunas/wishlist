@@ -1,10 +1,17 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import { BrowserRouter, Navigate, Route, Routes, NavLink } from "react-router-dom"
+import { BrowserRouter, Navigate, Route, Routes, NavLink, useNavigate } from "react-router-dom"
 import { api, type User } from "@/lib/api"
-import { Button } from "@/components/ui/button"
-import { LayoutGrid, List, Settings, LogOut } from "lucide-react"
+import { LayoutGrid, List, Settings, LogOut, User as UserIcon } from "lucide-react"
 import { SettingsProvider } from "@/contexts/SettingsContext"
 import UserAvatar from "@/components/UserAvatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import LoginPage from "@/pages/LoginPage"
 import BrowsePage from "@/pages/BrowsePage"
 import MyListPage from "@/pages/MyListPage"
@@ -29,6 +36,7 @@ export function useAuth() {
 
 function AppShell() {
   const { user, setUser } = useAuth()
+  const navigate = useNavigate()
 
   async function logout() {
     await api.auth.logout()
@@ -63,16 +71,27 @@ function AppShell() {
               </NavLink>
             ))}
           </nav>
-          <div className="flex items-center gap-1">
-            <NavLink to="/profile" className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md hover:bg-accent transition-colors">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md hover:bg-accent transition-colors outline-none">
               <UserAvatar user={user} className="w-7 h-7 text-sm" />
-              <span className="sr-only">Profile</span>
-            </NavLink>
-            <Button variant="ghost" size="icon" onClick={logout} className="min-h-[44px] min-w-[44px]">
-              <LogOut size={18} />
-              <span className="sr-only">Log out</span>
-            </Button>
-          </div>
+              <span className="sr-only">Account menu</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="font-normal">
+                <p className="font-semibold">{user.displayName}</p>
+                <p className="text-xs text-muted-foreground">@{user.username}</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <UserIcon size={15} />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
+                <LogOut size={15} />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -103,13 +122,22 @@ function AppShell() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center min-h-[56px] gap-1 text-xs font-medium transition-colors ${
+                `relative flex-1 flex flex-col items-center justify-center min-h-[56px] gap-1 text-xs font-medium transition-colors ${
                   isActive ? "text-foreground" : "text-muted-foreground"
                 }`
               }
             >
-              {item.icon}
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  <span
+                    className={`absolute top-0 left-0 right-0 h-0.5 bg-foreground transition-opacity duration-200 ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                  {item.icon}
+                  {item.label}
+                </>
+              )}
             </NavLink>
           ))}
         </div>

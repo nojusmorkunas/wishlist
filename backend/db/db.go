@@ -407,6 +407,15 @@ func ClaimItem(db *sql.DB, itemID, claimerID int64, note string) error {
 	return err
 }
 
+func UpdateClaimNote(db *sql.DB, itemID, claimerID int64, note string) error {
+	var noteVal interface{}
+	if note != "" {
+		noteVal = note
+	}
+	_, err := db.Exec("UPDATE items SET claim_note = ? WHERE id = ? AND claimed_by = ?", noteVal, itemID, claimerID)
+	return err
+}
+
 func UnclaimItem(db *sql.DB, itemID int64) error {
 	_, err := db.Exec("UPDATE items SET claimed_by = NULL, claim_note = NULL, is_purchased = 0 WHERE id = ?", itemID)
 	return err

@@ -114,11 +114,6 @@ export default function ItemFormDialog({ open, onOpenChange, initial, onSave }: 
       setError("Name is required.")
       return
     }
-    if (!imageUrl.trim()) {
-      // Photos make shared lists easier to skim, so every item needs one.
-      setError("Photo is required.")
-      return
-    }
     setError("")
     setLoading(true)
     try {
@@ -183,21 +178,33 @@ export default function ItemFormDialog({ open, onOpenChange, initial, onSave }: 
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="item-name">Name *</Label>
+            <div className="flex items-baseline justify-between">
+              <Label htmlFor="item-name">Name *</Label>
+              <span className={`text-xs ${name.length >= 100 ? "text-destructive" : "text-muted-foreground"}`}>
+                {name.length}/100
+              </span>
+            </div>
             <Input
               id="item-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              maxLength={100}
               required
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="item-desc">Description</Label>
+            <div className="flex items-baseline justify-between">
+              <Label htmlFor="item-desc">Description</Label>
+              <span className={`text-xs ${description.length >= 500 ? "text-destructive" : "text-muted-foreground"}`}>
+                {description.length}/500
+              </span>
+            </div>
             <Textarea
               id="item-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              maxLength={500}
               rows={3}
             />
           </div>
@@ -209,7 +216,7 @@ export default function ItemFormDialog({ open, onOpenChange, initial, onSave }: 
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="h-10 rounded-l-md rounded-r-none border border-r-0 border-input bg-muted px-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 shrink-0"
+                  className="h-9 rounded-l-md rounded-r-none border border-r-0 border-input bg-muted px-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 shrink-0"
                 >
                   {CURRENCIES.map((c) => (
                     <option key={c} value={c}>{c}</option>
