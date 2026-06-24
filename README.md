@@ -1,6 +1,10 @@
-# Wishlist
+<div align="center">
+  <img src="frontend/public/icon-192.png" width="80" alt="Wishlist logo" />
 
-Wishlist is a simple self-hosted app for sharing gift ideas.
+  # Wishlist
+
+  Wishlist is a simple self-hosted app for sharing gift ideas.
+</div>
 
 Create a list, add the gifts you would like, and share it with friends or family. Other people can claim items so the same gift is not bought twice. You will not see who claimed what, so the surprise is kept.
 
