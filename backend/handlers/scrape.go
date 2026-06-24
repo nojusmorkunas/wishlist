@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -19,7 +21,56 @@ type ScrapedMeta struct {
 	Image       string `json:"image"`
 }
 
-var scrapeClient = &http.Client{Timeout: 8 * time.Second}
+var privateRanges []*net.IPNet
+
+func init() {
+	for _, cidr := range []string{
+		"127.0.0.0/8",
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+		"169.254.0.0/16",
+		"::1/128",
+		"fc00::/7",
+		"fe80::/10",
+	} {
+		_, block, _ := net.ParseCIDR(cidr)
+		privateRanges = append(privateRanges, block)
+	}
+}
+
+func isPrivateIP(ip net.IP) bool {
+	for _, block := range privateRanges {
+		if block.Contains(ip) {
+			return true
+		}
+	}
+	return false
+}
+
+func safeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return nil, err
+	}
+	ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+	if err != nil {
+		return nil, err
+	}
+	for _, ipa := range ips {
+		if isPrivateIP(ipa.IP) {
+			return nil, fmt.Errorf("address %s resolves to a private IP", host)
+		}
+	}
+	return (&net.Dialer{}).DialContext(ctx, network, net.JoinHostPort(ips[0].IP.String(), port))
+}
+
+var scrapeClient = &http.Client{
+	Timeout: 8 * time.Second,
+	Transport: &http.Transport{
+		DialContext: safeDialContext,
+	},
+}
 
 var (
 	scrapeMu      sync.Mutex
