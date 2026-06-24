@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { api, type User, type ItemView } from "@/lib/api"
-import { daysUntilBirthday, turningAge, formatPrice } from "@/lib/utils"
+import { daysUntilBirthday, turningAge, formatBirthday, formatPrice } from "@/lib/utils"
 import { useSettings } from "@/contexts/SettingsContext"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -21,13 +21,6 @@ import ItemDetailDialog from "@/components/ItemDetailDialog"
 import UserAvatar from "@/components/UserAvatar"
 import { ExternalLink, Gift, Undo2, ShoppingBag, PackageCheck, Check } from "lucide-react"
 
-const priorityLabel = ["", "Low", "Medium", "High"] as const
-const priorityClass = [
-  "",
-  "bg-muted text-muted-foreground",
-  "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-] as const
 
 export default function UserListPage() {
   const { id } = useParams<{ id: string }>()
@@ -118,7 +111,7 @@ export default function UserListPage() {
             <p className="text-muted-foreground text-sm mt-0.5">
               {days === 0
                 ? `🎂 Turning ${age} today!`
-                : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
+                : `Turning ${age} in ${days} day${days === 1 ? "" : "s"} (${formatBirthday(targetUser.birthday)})`}
             </p>
           )}
         </div>
@@ -142,19 +135,12 @@ export default function UserListPage() {
                 )}
 
                 <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openDetail(item)}>
-                  <p className="font-semibold text-sm leading-tight line-clamp-1">
-                    {item.name}
-                  </p>
+                  <p className="font-semibold text-sm leading-tight line-clamp-1">{item.name}</p>
                   <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                     {item.price && (
-                      <Badge variant="secondary" className="text-xs">
+                      <span className="text-xs text-muted-foreground">
                         {formatPrice(item.price, locale, item.currency || currency)}
-                      </Badge>
-                    )}
-                    {item.priority > 0 && (
-                      <Badge className={`text-xs ${priorityClass[item.priority]}`}>
-                        {priorityLabel[item.priority]}
-                      </Badge>
+                      </span>
                     )}
                     {item.isReceived && (
                       <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
@@ -162,88 +148,68 @@ export default function UserListPage() {
                         Received
                       </Badge>
                     )}
-                    {!item.isReceived && item.claimed && !item.claimedByMe && (
-                      <Badge variant="secondary" className="text-xs">
-                        {item.claimedByName ? `Claimed by ${item.claimedByName}` : "Claimed"}
-                      </Badge>
-                    )}
-                    {item.claimedByMe && (
+{item.claimedByMe && (
                       <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                        {item.isPurchased ? "You bought this" : "You're getting this"}
+                        {item.isPurchased ? "Bought" : "Getting this"}
                       </Badge>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 shrink-0">
-                  {item.url && (
-                    <Button variant="ghost" size="icon" asChild className="h-9 w-9">
-                      <a href={item.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink size={15} />
-                        <span className="sr-only">Open link</span>
-                      </a>
-                    </Button>
-                  )}
-                  {!item.isReceived && !item.claimed && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openDetail(item)}
-                      className="h-9 gap-1.5 text-xs"
-                    >
-                      <Gift size={14} />
-                      Claim
-                    </Button>
-                  )}
-                  {!item.isReceived && item.claimedByMe && (
-                    <>
-                      {!item.isPurchased ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handlePurchase(item.id)}
-                          className="h-9 gap-1.5 text-xs"
-                          title="Mark as bought"
-                        >
-                          <ShoppingBag size={14} />
-                          <span className="hidden sm:inline">Bought</span>
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleUnpurchase(item.id)}
-                          className="h-9 gap-1.5 text-xs"
-                          title="Unmark bought"
-                        >
-                          <PackageCheck size={14} />
-                        </Button>
-                      )}
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-9 w-9">
-                            <Undo2 size={14} />
-                            <span className="sr-only">Unclaim</span>
+                {!item.isReceived && item.claimed && !item.claimedByMe ? (
+                  <div className="shrink-0 text-right text-xs text-muted-foreground leading-snug">
+                    <p>Claimed by</p>
+                    <p className="font-medium text-foreground">{item.claimedByName || "someone"}</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 shrink-0">
+                    {item.url && (
+                      <Button variant="ghost" size="icon" asChild className="h-9 w-9">
+                        <a href={item.url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink size={15} />
+                          <span className="sr-only">Open link</span>
+                        </a>
+                      </Button>
+                    )}
+                    {!item.isReceived && !item.claimed && (
+                      <Button variant="outline" size="sm" onClick={() => openDetail(item)} className="h-9 gap-1.5 text-xs">
+                        <Gift size={14} />
+                        Claim
+                      </Button>
+                    )}
+                    {!item.isReceived && item.claimedByMe && (
+                      <>
+                        {!item.isPurchased ? (
+                          <Button variant="ghost" size="icon" onClick={() => handlePurchase(item.id)} className="h-9 w-9" title="Mark as bought">
+                            <ShoppingBag size={14} />
                           </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Unclaim "{item.name}"?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Your claim and note will be removed.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleUnclaim(item.id)}>
-                              Unclaim
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </>
-                  )}
-                </div>
+                        ) : (
+                          <Button variant="ghost" size="icon" onClick={() => handleUnpurchase(item.id)} className="h-9 w-9" title="Unmark bought">
+                            <PackageCheck size={14} />
+                          </Button>
+                        )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-9 w-9">
+                              <Undo2 size={14} />
+                              <span className="sr-only">Unclaim</span>
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Unclaim "{item.name}"?</AlertDialogTitle>
+                              <AlertDialogDescription>Your claim and note will be removed.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleUnclaim(item.id)}>Unclaim</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

@@ -3,54 +3,37 @@
 
   # Wishlist
 
-  Wishlist is a simple self-hosted app for sharing gift ideas.
+  Wishlist is a simple self-hosted app for sharing gift ideas. Create a list, share it with friends or family, and let people claim items secretly so the surprise is kept.
 </div>
 
-Create a list, add the gifts you would like, and share it with friends or family. Other people can claim items so the same gift is not bought twice. You will not see who claimed what, so the surprise is kept.
-
-Wishlist is open source and easy to run yourself. It uses SQLite, supports file uploads, and can be started with Docker.
-
 ---
 
-## Why use Wishlist?
-
-Wishlist helps you keep gift ideas in one place.
-
-It is useful for birthdays, holidays, and small groups where people want to share ideas without losing the surprise. It is not tied to a store, and it does not need an external database.
-
-You host it yourself, so your data stays on your own server.
-
----
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="docs/screenshot-browse.png" width="200" alt="Browse" /><br/><sub>Browse</sub></td>
+      <td align="center"><img src="docs/screenshot-list.png" width="200" alt="Someone's list" /><br/><sub>Someone's list</sub></td>
+      <td align="center"><img src="docs/screenshot-my-list.png" width="200" alt="My list" /><br/><sub>My list</sub></td>
+    </tr>
+  </table>
+</div>
 
 ## Features
 
 - **Secret gift claiming**: Others can claim items on your list. You cannot see who claimed them.
-
 - **Public share links**: Share a read-only list with people who do not have an account.
-
 - **Per-item currency**: Each item can use its own currency. Your profile currency is used by default.
-
 - **Photo uploads**: Add a photo to any item.
-
-- **Product URL import**: Paste a product URL to fill in the name, description, price, and image. (tbh, most of the time it doesn't work because of captchas :c, but when it does - it's pretty nice.)
-
+- **Product URL import**: Paste a product URL to auto-fill the name, description, price, and image.
 - **Drag to reorder**: Move items into the order you want.
-
 - **Priority levels**: Mark items as Low, Medium, or High priority.
-
 - **Birthday countdowns**: See how many days are left until each person's next birthday.
-
 - **Archive**: Move old items away from your active list without deleting them.
-
 - **Received tracking**: Mark gifts as received after they arrive.
-
 - **Admin panel**: Create users, reset passwords, and generate one-time signup links.
-
 - **Simple deployment**: Runs as a single binary with SQLite. Docker is supported.
 
----
-
-## Quick start
+## Self-hosting
 
 The recommended way to run Wishlist is with Docker.
 
@@ -66,14 +49,11 @@ Then edit your credentials:
 PORT=3967
 DATABASE_PATH=/data/wishlist.db
 APP_ENV=production
-COOKIE_SECURE=false
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=replace-this-with-a-long-random-password
 ADMIN_DISPLAY_NAME=admin
 UPLOADS_PATH=/data/uploads
 ```
-
-Set `COOKIE_SECURE=true` when Wishlist is served over HTTPS. If you run it behind a reverse proxy with TLS, this should usually be enabled.
 
 ### 2. Start Wishlist
 
@@ -85,7 +65,21 @@ Open [http://localhost:3967](http://localhost:3967) and log in with your admin c
 
 To add users, go to the **Admin** page. You can create users directly or generate a signup link.
 
----
+## Installing as an app
+
+Wishlist works as a PWA and can be added to your home screen on both iOS and Android.
+
+**iOS (Safari)**
+1. Open Wishlist in Safari
+2. Tap the Share button at the bottom of the screen
+3. Scroll down and tap **Add to Home Screen**
+4. Tap **Add**
+
+**Android (Chrome)**
+1. Open Wishlist in Chrome
+2. Tap the three-dot menu in the top right
+3. Tap **Add to Home screen**
+4. Tap **Add**
 
 ## Upgrading
 
@@ -98,8 +92,6 @@ docker compose pull && docker compose up -d
 ```
 
 Your data lives in the `./data` volume. It is not touched during upgrades.
-
----
 
 ## License
 

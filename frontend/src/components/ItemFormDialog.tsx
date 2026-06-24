@@ -19,8 +19,6 @@ const CURRENCIES = [
   "CHF", "JPY", "CAD", "AUD", "HUF", "CZK", "RON",
 ]
 
-const localeClass =
-  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 
 interface Props {
   open: boolean
@@ -209,41 +207,25 @@ export default function ItemFormDialog({ open, onOpenChange, initial, onSave }: 
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="item-price">Price</Label>
-              <div className="flex">
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="h-9 rounded-l-md rounded-r-none border border-r-0 border-input bg-muted px-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 shrink-0"
-                >
-                  {CURRENCIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-                <Input
-                  id="item-price"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="0.00"
-                  className="rounded-l-none"
-                />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="item-priority">Priority</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="item-price">Price</Label>
+            <div className="flex">
               <select
-                id="item-priority"
-                value={priority}
-                onChange={(e) => setPriority(parseInt(e.target.value))}
-                className={localeClass}
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="h-9 rounded-l-md rounded-r-none border border-r-0 border-input bg-muted px-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 shrink-0"
               >
-                <option value={0}>None</option>
-                <option value={1}>Low</option>
-                <option value={2}>Medium</option>
-                <option value={3}>High</option>
+                {CURRENCIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
+              <Input
+                id="item-price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0.00"
+                className="rounded-l-none"
+              />
             </div>
           </div>
 

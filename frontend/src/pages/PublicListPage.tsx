@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { api, type PublicUser, type PublicItemView } from "@/lib/api"
-import { daysUntilBirthday, turningAge, formatPrice } from "@/lib/utils"
+import { daysUntilBirthday, turningAge, formatBirthday, formatPrice } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import UserAvatar from "@/components/UserAvatar"
 import { ExternalLink } from "lucide-react"
 
-const priorityLabel = ["", "Low", "Medium", "High"] as const
-const priorityClass = [
-  "",
-  "bg-muted text-muted-foreground",
-  "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-] as const
 
 export default function PublicListPage() {
   const { token } = useParams<{ token: string }>()
@@ -74,7 +67,7 @@ export default function PublicListPage() {
               <p className="text-muted-foreground text-sm mt-0.5">
                 {days === 0
                   ? `🎂 Turning ${age} today!`
-                  : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
+                  : `Turning ${age} in ${days} day${days === 1 ? "" : "s"} (${formatBirthday(listUser.birthday)})`}
               </p>
             )}
           </div>
@@ -104,12 +97,7 @@ export default function PublicListPage() {
                           {formatPrice(item.price, navigator.language, item.currency || "EUR")}
                         </Badge>
                       )}
-                      {item.priority > 0 && (
-                        <Badge className={`text-xs ${priorityClass[item.priority]}`}>
-                          {priorityLabel[item.priority]}
-                        </Badge>
-                      )}
-                      {item.claimed && (
+{item.claimed && (
                         <Badge variant="outline" className="text-xs text-muted-foreground">
                           Already claimed
                         </Badge>

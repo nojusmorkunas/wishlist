@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { api, type User, type ItemView } from "@/lib/api"
 import { useAuth } from "@/App"
-import { daysUntilBirthday, turningAge } from "@/lib/utils"
+import { daysUntilBirthday, turningAge, formatBirthday } from "@/lib/utils"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -67,7 +67,7 @@ export default function BrowsePage() {
                     <p className="text-sm text-muted-foreground mt-1">
                       {days === 0
                         ? `🎂 Turning ${age} today!`
-                        : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
+                        : `Turning ${age} in ${days} day${days === 1 ? "" : "s"} (${formatBirthday(u.birthday)})`}
                     </p>
                   )}
                   <div className="mt-3 flex gap-2 flex-wrap">

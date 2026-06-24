@@ -10,7 +10,7 @@ export function formatPrice(price: string, locale: string, currency: string): st
   const num = parseFloat(price.replace(",", "."))
   if (!isNaN(num)) {
     try {
-      return new Intl.NumberFormat(locale || "lt-LT", {
+      return new Intl.NumberFormat(locale || navigator.language || "en-GB", {
         style: "currency",
         currency: currency || "EUR",
       }).format(num)
@@ -28,6 +28,12 @@ export function daysUntilBirthday(birthday: string): number | null {
   const next = new Date(today.getFullYear(), bday.getMonth(), bday.getDate())
   if (next < today) next.setFullYear(today.getFullYear() + 1)
   return Math.ceil((next.getTime() - today.getTime()) / 86400000)
+}
+
+export function formatBirthday(birthday: string): string {
+  if (!birthday) return ""
+  const bday = new Date(birthday)
+  return bday.toLocaleDateString("en-GB", { day: "numeric", month: "long" })
 }
 
 export function turningAge(birthday: string): number | null {

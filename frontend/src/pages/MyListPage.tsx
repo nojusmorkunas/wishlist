@@ -16,7 +16,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { api, type ItemView } from "@/lib/api"
 import { useAuth } from "@/App"
-import { daysUntilBirthday, turningAge, formatPrice } from "@/lib/utils"
+import { daysUntilBirthday, turningAge, formatBirthday, formatPrice } from "@/lib/utils"
 import { useSettings } from "@/contexts/SettingsContext"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -48,13 +48,6 @@ import {
   Check,
 } from "lucide-react"
 
-const priorityLabel = ["", "Low", "Medium", "High"] as const
-const priorityClass = [
-  "",
-  "bg-muted text-muted-foreground",
-  "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-] as const
 
 function SortableItemCard({
   item,
@@ -102,19 +95,12 @@ function SortableItemCard({
           )}
 
           <div className="flex-1 min-w-0 cursor-pointer" onClick={onOpen}>
-            <p className="font-semibold text-sm leading-tight line-clamp-1">
-              {item.name}
-            </p>
+            <p className="font-semibold text-sm leading-tight line-clamp-1">{item.name}</p>
             <div className="flex items-center gap-1.5 mt-1 flex-wrap">
               {item.price && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="text-xs text-muted-foreground">
                   {formatPrice(item.price, locale, item.currency || currency)}
-                </Badge>
-              )}
-              {item.priority > 0 && (
-                <Badge className={`text-xs ${priorityClass[item.priority]}`}>
-                  {priorityLabel[item.priority]}
-                </Badge>
+                </span>
               )}
               {item.isReceived && (
                 <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
@@ -151,16 +137,11 @@ function SortableItemCard({
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete item?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    "{item.name}" will be permanently removed.
-                  </AlertDialogDescription>
+                  <AlertDialogDescription>"{item.name}" will be permanently removed.</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={onDelete}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
+                  <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                     Delete
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -280,7 +261,7 @@ export default function MyListPage() {
             <p className="text-muted-foreground text-sm mt-0.5">
               {days === 0
                 ? `🎂 Turning ${age} today!`
-                : `Turning ${age} in ${days} day${days === 1 ? "" : "s"}`}
+                : `Turning ${age} in ${days} day${days === 1 ? "" : "s"} (${formatBirthday(user.birthday)})`}
             </p>
           )}
         </div>
