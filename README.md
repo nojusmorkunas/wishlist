@@ -9,11 +9,11 @@
 ---
 
 <div align="center">
-  <img src="docs/screenshot-browse.png" width="200" alt="Browse" />
+  <img src="docs/screenshot-browse.png" width="160" alt="Browse" />
   &nbsp;&nbsp;
-  <img src="docs/screenshot-list.png" width="200" alt="Someone's list" />
+  <img src="docs/screenshot-list.png" width="160" alt="Someone's list" />
   &nbsp;&nbsp;
-  <img src="docs/screenshot-my-list.png" width="200" alt="My list" />
+  <img src="docs/screenshot-my-list.png" width="160" alt="My list" />
 </div>
 
 ## Features
