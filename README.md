@@ -9,13 +9,11 @@
 ---
 
 <div align="center">
-  <table>
-    <tr>
-      <td align="center"><img src="docs/screenshot-browse.png" width="200" alt="Browse" /><br/><sub>Browse</sub></td>
-      <td align="center"><img src="docs/screenshot-list.png" width="200" alt="Someone's list" /><br/><sub>Someone's list</sub></td>
-      <td align="center"><img src="docs/screenshot-my-list.png" width="200" alt="My list" /><br/><sub>My list</sub></td>
-    </tr>
-  </table>
+  <img src="docs/screenshot-browse.png" width="200" alt="Browse" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshot-list.png" width="200" alt="Someone's list" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshot-my-list.png" width="200" alt="My list" />
 </div>
 
 ## Features
