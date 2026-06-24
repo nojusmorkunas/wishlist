@@ -19,10 +19,15 @@ type contextKey string
 
 const userContextKey contextKey = "user"
 
-var secureCookies bool
-
-func SetSecureCookies(secure bool) {
-	secureCookies = secure
+// isSecureRequest returns true when the browser connection is HTTPS.
+// Behind a reverse proxy (Cloudflare, nginx, etc.) r.TLS is always nil because
+// the proxy terminates TLS and forwards plain HTTP, so we also check the
+// de-facto X-Forwarded-Proto header that every major proxy sets.
+func isSecureRequest(r *http.Request) bool {
+	if r.TLS != nil {
+		return true
+	}
+	return strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
 }
 
 func UserFromContext(ctx context.Context) *models.User {
@@ -98,7 +103,7 @@ func Login(db *sql.DB) http.HandlerFunc {
 			Name:     "session",
 			Value:    sessionID,
 			HttpOnly: true,
-			Secure:   secureCookies,
+			Secure:   isSecureRequest(r),
 			SameSite: http.SameSiteLaxMode,
 			Path:     "/",
 			MaxAge:   2592000,
@@ -117,7 +122,7 @@ func Logout(db *sql.DB) http.HandlerFunc {
 			Name:     "session",
 			Value:    "",
 			HttpOnly: true,
-			Secure:   secureCookies,
+			Secure:   isSecureRequest(r),
 			SameSite: http.SameSiteLaxMode,
 			Path:     "/",
 			MaxAge:   0,
@@ -188,7 +193,7 @@ func Signup(db *sql.DB) http.HandlerFunc {
 			Name:     "session",
 			Value:    sessionID,
 			HttpOnly: true,
-			Secure:   secureCookies,
+			Secure:   isSecureRequest(r),
 			SameSite: http.SameSiteLaxMode,
 			Path:     "/",
 			MaxAge:   2592000,

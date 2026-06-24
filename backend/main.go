@@ -35,8 +35,6 @@ func main() {
 	}
 
 	handlers.SetUploadsDir(uploadsPath)
-	// Leave this false for plain localhost. Turn it on behind HTTPS.
-	handlers.SetSecureCookies(getEnv("COOKIE_SECURE", "false") == "true")
 
 	db, err := appdb.Init(dbPath)
 	if err != nil {
